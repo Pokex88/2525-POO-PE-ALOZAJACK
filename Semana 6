@@ -1,0 +1,79 @@
+# Programa: Sistema de Vehículos
+# Objetivo: Demostrar POO con herencia, encapsulación y polimorfismo
+
+# Clase base
+class Vehiculo:
+    def __init__(self, marca, modelo, año):
+        self._marca = marca                  # Atributo protegido (encapsulación)
+        self._modelo = modelo
+        self.__año = año                     # Atributo privado (encapsulación)
+
+    def descripcion(self):
+        print(f"{self._marca} {self._modelo} del año {self.__año}")
+
+    def arrancar(self):
+        print(f"{self._marca} está arrancando (método genérico).")
+
+    # Getter para el atributo privado __año
+    def get_año(self):
+        return self.__año
+
+    # Setter para el atributo privado __año
+    def set_año(self, nuevo_año):
+        if nuevo_año > 1885:
+            self.__año = nuevo_año
+        else:
+            print("Año no válido para un vehículo.")
+
+
+# Clase derivada: Auto
+class Auto(Vehiculo):
+    def __init__(self, marca, modelo, año, puertas):
+        super().__init__(marca, modelo, año)
+        self.puertas = puertas
+
+    # Polimorfismo: sobrescribimos el método arrancar
+    def arrancar(self):
+        print(f"El auto {self._marca} arranca con llave.")
+
+    def tocar_claxon(self):
+        print("¡Beep beep! ")
+
+
+# Clase derivada: Motocicleta
+class Motocicleta(Vehiculo):
+    def __init__(self, marca, modelo, año, cilindrada):
+        super().__init__(marca, modelo, año)
+        self.cilindrada = cilindrada
+
+    # Polimorfismo: sobrescribimos el método arrancar
+    def arrancar(self):
+        print(f"La motocicleta {self._marca} arranca con botón eléctrico.")
+
+    def hacer_caballito(self):
+        print("¡La moto está haciendo un caballito! ")
+
+
+# Programa principal
+def main():
+    # Crear una instancia de Auto
+    auto1 = Auto("Toyota", "Corolla", 2020, 4)
+    auto1.descripcion()
+    auto1.arrancar()        # Polimorfismo
+    auto1.tocar_claxon()
+    print("Año del auto:", auto1.get_año())
+    auto1.set_año(2023)
+    print("Nuevo año:", auto1.get_año())
+
+    print("\n----------------------------\n")
+
+    # Crear una instancia de Motocicleta
+    moto1 = Motocicleta("Yamaha", "R1", 2022, 1000)
+    moto1.descripcion()
+    moto1.arrancar()        # Polimorfismo
+    moto1.hacer_caballito()
+    print("Año de la moto:", moto1.get_año())
+    moto1.set_año(2021)
+    print("Nuevo año:", moto1.get_año())
+
+
