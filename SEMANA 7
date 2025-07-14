@@ -1,0 +1,53 @@
+ def __init__(self, nombre_archivo, modo):
+        """
+     Constructor
+      :param nombre_archivo: nombre del archivo que se abrirá
+        :param modo: modo en que se abrirá el archivo ('w', 'r', etc.)
+      """
+  self.nombre_archivo = nombre_archivo
+  self.modo = modo
+  self.archivo = open(nombre_archivo, modo)
+  print(f"Archivo '{self.nombre_archivo}' abierto en modo '{self.modo}'.")
+
+    def escribir(self, texto):
+        """
+        Escribe una línea de texto en el archivo (si está en modo escritura).
+        """
+        if 'w' in self.modo or 'a' in self.modo:
+            self.archivo.write(texto + '\n')
+            print("Texto escrito en el archivo.")
+        else:
+            print("El archivo no está en modo escritura.")
+
+    def leer(self):
+        """
+        Lee el contenido del archivo (si está en modo lectura).
+        """
+        if 'r' in self.modo:
+            contenido = self.archivo.read()
+            print("Contenido del archivo:")
+            print(contenido)
+        else:
+            print("El archivo no está en modo lectura.")
+
+    def __del__(self):
+        """
+        Destructor 
+        Se ejecuta automáticamente cuando el objeto es destruido o el programa termina.
+
+        Aquí se cierra el archivo para liberar el recurso.
+        """
+        try:
+            self.archivo.close()
+            print(f"Archivo '{self.nombre_archivo}' cerrado correctamente.")
+        except AttributeError:
+            # Si el archivo nunca se abrió correctamente
+            print("No se pudo cerrar el archivo (no fue abierto correctamente).")
+
+
+# Ejemplo de uso
+if __name__ == "__main__":
+    archivo = ArchivoTexto("ejemplo.txt", "w")  # Se ejecuta __init__
+    archivo.escribir("Hola, este es un ejemplo de constructor y destructor.")
+    
+
