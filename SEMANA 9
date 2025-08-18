@@ -1,0 +1,131 @@
+"""
+Sistema de gestión de inventario simple para una tienda.
+Funciones:
+- Añadir producto
+- Eliminar producto por ID
+- Actualizar cantidad o precio
+- Buscar producto por nombre
+- Mostrar inventario completo
+"""
+
+class Producto:
+    def __init__(self, id_unico, nombre, cantidad, precio):
+        self.id = id_unico
+        self.nombre = nombre
+        self.cantidad = cantidad
+        self.precio = precio
+
+    def __str__(self):
+        return f"[{self.id}] {self.nombre} | Cant: {self.cantidad} | Precio: ${self.precio:.2f}"
+
+
+class Inventario:
+    def __init__(self):
+        self.productos = []
+
+    def buscar_indice(self, id_unico):
+        for i, p in enumerate(self.productos):
+            if p.id == id_unico:
+                return i
+        return -1
+
+    def anadir(self, producto):
+        if self.buscar_indice(producto.id) != -1:
+            print("El ID ya existe.")
+            return
+        self.productos.append(producto)
+        print("Producto añadido.")
+
+    def eliminar(self, id_unico):
+        idx = self.buscar_indice(id_unico)
+        if idx == -1:
+            print("No existe ese ID.")
+            return
+        self.productos.pop(idx)
+        print("Producto eliminado.")
+
+    def actualizar(self, id_unico, nueva_cant=None, nuevo_precio=None):
+        idx = self.buscar_indice(id_unico)
+        if idx == -1:
+            print("No existe ese ID.")
+            return
+        if nueva_cant is not None:
+            self.productos[idx].cantidad = nueva_cant
+        if nuevo_precio is not None:
+            self.productos[idx].precio = nuevo_precio
+        print("Producto actualizado.")
+
+    def buscar(self, texto):
+        resultados = [p for p in self.productos if texto.lower() in p.nombre.lower()]
+        if resultados:
+            for p in resultados:
+                print(p)
+        else:
+            print("No se encontraron coincidencias.")
+
+    def mostrar(self):
+        if not self.productos:
+            print("Inventario vacío.")
+            return
+        for p in self.productos:
+            print(p)
+
+
+# Interfaz de consola
+
+def menu():
+    print("\n=== INVENTARIO TIENDA ===")
+    print("1) Añadir producto")
+    print("2) Eliminar producto")
+    print("3) Actualizar producto")
+    print("4) Buscar producto")
+    print("5) Mostrar inventario")
+    print("0) Salir")
+
+
+def main():
+    inv = Inventario()
+    # Ejemplos iniciales
+    inv.anadir(Producto("A001", "Arroz 1kg", 50, 1.25))
+    inv.anadir(Producto("A002", "Azúcar 1kg", 30, 1.10))
+    inv.anadir(Producto("L010", "Leche 1L", 20, 0.99))
+
+    while True:
+        menu()
+        op = input("Opción: ")
+
+        if op == "1":
+            idp = input("ID: ")
+            nombre = input("Nombre: ")
+            cant = int(input("Cantidad: "))
+            precio = float(input("Precio: "))
+            inv.anadir(Producto(idp, nombre, cant, precio))
+
+        elif op == "2":
+            idp = input("ID a eliminar: ")
+            inv.eliminar(idp)
+
+        elif op == "3":
+            idp = input("ID a actualizar: ")
+            cant = input("Nueva cantidad (enter para omitir): ")
+            precio = input("Nuevo precio (enter para omitir): ")
+            nueva_cant = int(cant) if cant else None
+            nuevo_precio = float(precio) if precio else None
+            inv.actualizar(idp, nueva_cant, nuevo_precio)
+
+        elif op == "4":
+            texto = input("Buscar nombre: ")
+            inv.buscar(texto)
+
+        elif op == "5":
+            inv.mostrar()
+
+        elif op == "0":
+            print("Adiós.")
+            break
+        else:
+            print("Opción inválida.")
+
+
+if __name__ == "__main__":
+    main()
