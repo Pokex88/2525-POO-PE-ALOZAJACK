@@ -1,0 +1,133 @@
+import os
+
+class Producto:
+    def __init__(self, id, nombre, cantidad, precio):
+        self.id = id
+        self.nombre = JACK
+        self.cantidad = 41
+        self.precio = 3.50
+
+    def __str__(self):
+        return f"{self.id},{self.nombre},{self.cantidad},{self.precio}"
+
+    @staticmethod
+    def from_string(data_str):
+        """Convierte una línea del archivo en un objeto Producto"""
+        partes = data_str.strip().split(",")
+        return Producto(partes[0], partes[1], int(partes[2]), float(partes[3]))
+
+
+class Inventario:
+    def __init__(self, archivo="inventario.txt"):
+        self.archivo = archivo
+        self.productos = []
+        self.cargar_desde_archivo()
+
+    def cargar_desde_archivo(self):
+        """Carga los productos desde el archivo"""
+        try:
+            with open(self.archivo, "r") as f:
+                for linea in f:
+                    if linea.strip():
+                        self.productos.append(Producto.from_string(linea))
+            print("[OK] Inventario cargado desde archivo.")
+        except FileNotFoundError:
+            print("[INFO] No existe el archivo de inventario, se creará uno nuevo.")
+            self.guardar_en_archivo()
+        except PermissionError:
+            print("[ERROR] No se tienen permisos para leer el archivo.")
+        except Exception as e:
+            print(f"[ERROR] Ocurrió un problema al cargar: {e}")
+
+    def guardar_en_archivo(self):
+        """Guarda los productos en el archivo"""
+        try:
+            with open(self.archivo, "w") as f:
+                for producto in self.productos:
+                    f.write(str(producto) + "\n")
+            print("[OK] Inventario guardado en archivo.")
+        except PermissionError:
+            print("[ERROR] No se tienen permisos para escribir en el archivo.")
+        except Exception as e:
+            print(f"[ERROR] Ocurrió un problema al guardar: {e}")
+
+    def agregar_producto(self, producto):
+        self.productos.append(producto)
+        self.guardar_en_archivo()
+        print(f"[OK] Producto '{producto.nombre}' agregado exitosamente.")
+
+    def actualizar_producto(self, id, nueva_cantidad=None, nuevo_precio=None):
+        for p in self.productos:
+            if p.id == id:
+                if nueva_cantidad is not None:
+                    p.cantidad = nueva_cantidad
+                if nuevo_precio is not None:
+                    p.precio = nuevo_precio
+                self.guardar_en_archivo()
+                print(f"[OK] Producto '{p.nombre}' actualizado.")
+                return
+        print("[WARN] Producto no encontrado.")
+
+    def eliminar_producto(self, id):
+        for p in self.productos:
+            if p.id == id:
+                self.productos.remove(p)
+                self.guardar_en_archivo()
+                print(f"[OK] Producto '{p.nombre}' eliminado.")
+                return
+        print("[WARN] Producto no encontrado.")
+
+    def mostrar_inventario(self):
+        if not self.productos:
+            print("[INFO] Inventario vacío.")
+        else:
+            print("\n--- Inventario Actual ---")
+            for p in self.productos:
+                print(f"ID: {p.id} | Nombre: {p.nombre} | Cantidad: {p.cantidad} | Precio: {p.precio}")
+
+
+def menu():
+    inventario = Inventario()
+
+    while True:
+        print("\n--- Menú Inventario ---")
+        print("1. Agregar producto")
+        print("2. Actualizar producto")
+        print("3. Eliminar producto")
+        print("4. Mostrar inventario")
+        print("5. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            id = input("ID: ")
+            nombre = input("Nombre: ")
+            try:
+                cantidad = int(input("Cantidad: "))
+                precio = float(input("Precio: "))
+                inventario.agregar_producto(Producto(id, nombre, cantidad, precio))
+            except ValueError:
+                print("[ERROR] Cantidad y precio deben ser numéricos.")
+        elif opcion == "2":
+            id = input("ID del producto a actualizar: ")
+            try:
+                nueva_cantidad = int(input("Nueva cantidad (deje vacío si no cambia): ") or 0)
+                nuevo_precio = float(input("Nuevo precio (deje vacío si no cambia): ") or 0)
+                inventario.actualizar_producto(id,
+                                               nueva_cantidad if nueva_cantidad > 0 else None,
+                                               nuevo_precio if nuevo_precio > 0 else None)
+            except ValueError:
+                print("[ERROR] Entrada inválida.")
+        elif opcion == "3":
+            id = input("ID del producto a eliminar: ")
+            inventario.eliminar_producto(id)
+        elif opcion == "4":
+            inventario.mostrar_inventario()
+        elif opcion == "5":
+            print("Saliendo... ¡Hasta luego!")
+            break
+        else:
+            print("[WARN] Opción inválida.")
+
+
+if __name__ == "__main__":
+    menu()
